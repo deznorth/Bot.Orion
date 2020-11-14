@@ -1,0 +1,21 @@
+{
+  "name": "@deznorth/bot-orion",
+  "version": "1.0.0",
+  "description": "This is a bot created for the \"July's Residence\" discord server",
+  "main": "main.js",
+  "repository": "https://github.com/deznorth/Bot.Orion.git",
+  "author": "David Rojas",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon .",
+    "start:prod": "node ."
+  },
+  "dependencies": {
+    "debug": "^4.2.0",
+    "discord.js": "^12.4.1"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.6"
+  }
+}
