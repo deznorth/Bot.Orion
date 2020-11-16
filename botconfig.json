@@ -6,6 +6,12 @@
     "red": "#ff0099",
     "orange": "#ff9900",
     "purple": "#9900ff",
-    "blue": "#0099ff"
+    "blue": "#0099ff",
+    "grey": "#b4bed1"
+  },
+  "reactions": {
+    "yes": "👍",
+    "no": "👎",
+    "maybe": "❔"
   }
 }
