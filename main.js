@@ -17,7 +17,16 @@ for(const file of commandFiles) {
 
 const prefix = config.prefix;
 
-client.once('ready', () => log(`Logged in as ${client.user.tag}!`));
+client.once('ready', () => {
+  log(`Logged in as ${client.user.tag}!`);
+  client.user.setPresence({
+    activity: {
+      name: `${config.prefix}help`,
+      type: 'LISTENING',
+    },
+    status: 'online',
+  });
+});
 
 client.on('message', message => {
   // Stop if message is created by the bot or if it doesn't start with prefix
