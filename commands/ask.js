@@ -115,7 +115,7 @@ const exec = async (message, args) => {
   
   const questionEmbed = buildQuestionEmbed(author, options);
   
-  const questionMessage = await message.channel.send(questionEmbed);
+  const questionMessage = await message.channel.send('@here', questionEmbed);
 
   if (message.channel.type !== 'dm') message.delete();
 
@@ -136,7 +136,7 @@ const exec = async (message, args) => {
       maybeResults,
     });
 
-    questionMessage.edit(resultsEmbed);
+    questionMessage.channel.send('@here', resultsEmbed);
   });
 };
 
