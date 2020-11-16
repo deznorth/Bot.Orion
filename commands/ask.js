@@ -45,17 +45,20 @@ const buildResultsEmbed = (questionEmbed, options, results) => {
   const resultColors = [
     { ...yesResults, color: colors.green },
     { ... noResults, color: colors.red },
-    { ...maybeResults, color: colors.grey },
   ];
+
+  if (includeMaybe) resultColors.push({ ...maybeResults, color: colors.grey });
 
   resultColors.sort((a, b) => {
     if (a.votes === b.votes) return 0;
     return a.votes > b.votes ? -1 : 1;
   })
 
-  const isTie = (yesResults.votes !== 0 && yesResults.votes === noResults.votes) ||
-  (yesResults.votes !== 0 && yesResults.votes === maybeResults.votes) ||
-  (noResults.votes !== 0 && noResults.votes === maybeResults.votes);
+  const votesArr = Object.values(results).filter(v => v !== null).map(r => r.votes);
+
+  const noResponses = votesArr.every(v => v === 0);
+
+  const isTie = noResponses || votesArr.every((v, i, arr) => v === arr[0]);
 
   if (!isTie) resultColor = resultColors[0].color;
 
@@ -86,8 +89,8 @@ const getOptions = (args) => {
   };
 
   options.expiration = new Date(Date.now() + options.duration);
-  options.includeMaybe = args[2] ? new Boolean(args[2]) : false;
-  options.passMinimum = args[3] ? parseInt(args[3]) : null;
+  options.includeMaybe = new Boolean(args[2]) == true;
+  options.passMinimum = parseInt(args[3]) > 0 ? parseInt(args[3]) : null;
 
   return options;
 };
@@ -115,7 +118,13 @@ const exec = async (message, args) => {
   
   const questionEmbed = buildQuestionEmbed(author, options);
   
-  const questionMessage = await message.channel.send(questionEmbed);
+  const questionMessage = await message.channel.send('@here', questionEmbed);
+
+  questionMessage.pin();
+
+  setTimeout(() => {
+    questionMessage.unpin();
+  }, options.duration);
 
   if (message.channel.type !== 'dm') message.delete();
 
@@ -128,7 +137,7 @@ const exec = async (message, args) => {
   .then(async collected => {
     const yesResults = await getReactionResults(collected, reactions.yes);
     const noResults = await getReactionResults(collected, reactions.no);
-    const maybeResults = await getReactionResults(collected, reactions.maybe);
+    const maybeResults = options.includeMaybe ? await getReactionResults(collected, reactions.maybe) : null;
 
     const resultsEmbed = buildResultsEmbed(questionEmbed, options, {
       yesResults,
@@ -136,7 +145,7 @@ const exec = async (message, args) => {
       maybeResults,
     });
 
-    questionMessage.edit(resultsEmbed);
+    questionMessage.channel.send('@here', resultsEmbed);
   });
 };
 
