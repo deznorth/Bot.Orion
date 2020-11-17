@@ -1,7 +1,6 @@
 pipeline {
   agent {
     docker {
-      label 'docker-linux'
       image 'node:lts-alpine'
       args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock'
     }
