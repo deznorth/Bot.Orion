@@ -1,5 +1,11 @@
 pipeline {
-  agent any
+  agent {
+    docker {
+      label 'docker-linux'
+      image 'node:lts-alpine'
+      args '-u root --privileged -v /var/run/docker.sock:/var/run/docker.sock'
+    }
+  }
   environment {
     REGISTRY_CREDS = 'proget-user'
     REGISTRY_URI = 'https://proget.deznorth.com'
