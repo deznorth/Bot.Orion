@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   kubernetes: circleci/kubernetes@0.11.2
 workflows:
-  version: 2.1
+  version: 2
   build-deploy:
     jobs:
       - build:
@@ -57,7 +57,7 @@ jobs:
       - checkout
       - kubernetes/install-kubectl
       - kubernetes/install-kubeconfig:
-          kubeconfig: $DEZSERV_KUBECONFIG
+          kubeconfig: DEZSERV_KUBECONFIG
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: k8s/deployment.yaml
