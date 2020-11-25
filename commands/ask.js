@@ -89,7 +89,7 @@ const getOptions = (args) => {
   };
 
   options.expiration = new Date(Date.now() + options.duration);
-  options.includeMaybe = new Boolean(args[2]) == true;
+  options.includeMaybe = ['true','yes','1'].includes(args[2]); // Using `new Boolean(args[2])` or `Boolean(args[2])` wasn't working.
   options.passMinimum = parseInt(args[3]) > 0 ? parseInt(args[3]) : null;
 
   return options;
