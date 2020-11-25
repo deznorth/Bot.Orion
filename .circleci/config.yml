@@ -25,7 +25,6 @@ jobs:
           username: deznorth
           password: $DOCKERHUB_TOKEN
     environment:
-      IMAGETAG: $CIRCLE_BUILD_NUM
       APP_NAME: bot-orion
       DOCKER_REGISTRY: 'proget.deznorth.com/private-docker'
       REGISTRY_URL: 'proget.deznorth.com'
@@ -44,9 +43,10 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
-      - run: docker build -t $DOCKER_REGISTRY/$APP_NAME:$IMAGETAG .
+      - run: docker build -t $DOCKER_REGISTRY/$APP_NAME:$CIRCLE_BUILD_NUM .
+      - run: docker tag $DOCKER_REGISTRY/$APP_NAME:$CIRCLE_BUILD_NUM $DOCKER_REGISTRY/$APP_NAME:latest
       - run: docker login -u $PROGET_USER -p $PROGET_PASS $REGISTRY_URL # User and Pass from dezserv context
-      - run: docker push $DOCKER_REGISTRY/$APP_NAME:$IMAGETAG
+      - run: docker push $DOCKER_REGISTRY/$APP_NAME:$CIRCLE_BUILD_NUM
   deploy:
     docker:
       - image: circleci/node:latest
