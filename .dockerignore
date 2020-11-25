@@ -1,0 +1,7 @@
+.vs/
+.git/
+.circleci/
+
+.env
+
+node_modules

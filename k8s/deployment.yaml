@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bot-orion
+  labels:
+    app: bot-orion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bot-orion
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: bot-orion
+    spec:
+      containers:
+        - image: proget.deznorth.com/private-docker/bot-orion:latest
+          name: bot-orion
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: DEBUG
+              value: 'orion,orion:*'
+            - name: API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bot-orion-secrets
+                  key: apiToken
