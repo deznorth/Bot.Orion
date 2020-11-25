@@ -6,14 +6,12 @@ workflows:
   build-deploy:
     jobs:
       - build:
-          context:
-            - dezserv
+          context: dezserv
           filters:
             branches:
               only: master
       - deploy:
-          context:
-            - dezserv
+          context: dezserv
           requires:
             - build
           filters:
@@ -23,8 +21,9 @@ jobs:
   build:
     docker:
       - image: circleci/node:latest
-        auth: deznorth
-        password: $DOCKERHUB_TOKEN
+        auth:
+          username: deznorth
+          password: $DOCKERHUB_TOKEN
     environment:
       IMAGETAG: $CIRCLE_BUILD_NUM
       APP_NAME: bot-orion
@@ -33,7 +32,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-        version: 19.03.13
+          version: 19.03.13
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -51,8 +50,9 @@ jobs:
   deploy:
     docker:
       - image: circleci/node:latest
-        auth: deznorth
-        password: $DOCKERHUB_TOKEN
+        auth:
+          username: deznorth
+          password: $DOCKERHUB_TOKEN
     steps:
       - checkout
       - kubernetes/install-kubectl
