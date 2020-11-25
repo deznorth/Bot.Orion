@@ -1,0 +1,65 @@
+version: 2.1
+orbs:
+  kubernetes: circleci/kubernetes@0.11.2
+workflows:
+  version: 2.1
+  build-deploy:
+    jobs:
+      - build:
+          context:
+            - dezserv
+          filters:
+            branches:
+              only: master
+      - deploy:
+          context:
+            - dezserv
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+jobs:
+  build:
+    docker:
+      - image: circleci/node:latest
+        auth: deznorth
+        password: $DOCKERHUB_TOKEN
+    environment:
+      IMAGETAG: $CIRCLE_BUILD_NUM
+      APP_NAME: bot-orion
+      DOCKER_REGISTRY: 'proget.deznorth.com/private-docker'
+      REGISTRY_URL: 'proget.deznorth.com'
+    steps:
+      - checkout
+      - setup_remote_docker:
+        version: 19.03.13
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run: yarn install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
+      - run: docker build -t $DOCKER_REGISTRY/$APP_NAME:$IMAGETAG .
+      - run: docker login -u $PROGET_USER -p $PROGET_PASS $REGISTRY_URL # User and Pass from dezserv context
+      - run: docker push $DOCKER_REGISTRY/$APP_NAME:$IMAGETAG
+  deploy:
+    docker:
+      - image: circleci/node:latest
+        auth: deznorth
+        password: $DOCKERHUB_TOKEN
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - kubernetes/install-kubeconfig:
+          kubeconfig: $DEZSERV_KUBECONFIG
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: k8s/deployment.yaml
+          resource-name: deployment/bot-orion
+          show-kubectl-command: true
