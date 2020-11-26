@@ -1,3 +1,5 @@
+const log = require('debug')('orion:reload');
+
 const exec = (message, args) => {
   const commandName = args[0].toLowerCase();
   const command = message.client.commands.get(commandName)
@@ -10,9 +12,10 @@ const exec = (message, args) => {
   try {
     const newCommand = require(`./${command.name}.js`);
     message.client.commands.set(newCommand.name, newCommand);
+    log(`Reloaded command file for \`${command.name}\`.`);
     message.channel.send(`Command \`${command.name}\` was reloaded!`);
   } catch (error) {
-    console.error(error);
+    log(error);
     message.channel.send(`There was an error while reloading a command \`${command.name}\`:\n\`${error.message}\``);
   }
 };
