@@ -2,6 +2,7 @@ const log = require('debug')('orion:ask');
 const Discord = require('discord.js');
 const { colors, reactions } =require('../botconfig.json');
 const moment = require('moment-timezone');
+const { isDev } = require('../util/constants');
 
 const buildQuestionEmbed = (author, options) => {
 
@@ -107,6 +108,8 @@ const getOptions = (args) => {
   options.includeMaybe = ['true','yes','1'].includes(args[2]); // Using `new Boolean(args[2])` or `Boolean(args[2])` wasn't working.
   options.passMinimum = parseInt(args[3]) > 0 ? parseInt(args[3]) : null;
 
+  log('with options:', options);
+
   return options;
 };
 
@@ -135,8 +138,10 @@ const exec = async (message, args) => {
     baseEmbed,
     questionEmbed,
   } = buildQuestionEmbed(author, options);
+
+  const hereTag = isDev ? '' : '@here';
   
-  const questionMessage = await message.channel.send('@here', questionEmbed);
+  const questionMessage = await message.channel.send(hereTag, questionEmbed);
 
   questionMessage.pin();
 
@@ -163,7 +168,7 @@ const exec = async (message, args) => {
       maybeResults,
     });
 
-    questionMessage.channel.send('@here', resultsEmbed);
+    questionMessage.channel.send(hereTag, resultsEmbed);
   });
 };
 
@@ -173,6 +178,6 @@ module.exports = {
   usage: '"<question>" <duration in minutes> <allow "maybe" option> <minimum votes to pass>',
   example: '"does anyone want to play rocket league?" 10 true 3',
   argsRequired: true,
-  guildOnly: !(process.env.NODE_ENV === 'dev'), // Enable DM testing while in development
+  guildOnly: !isDev, // Enable DM testing while in development
   exec,
 };
