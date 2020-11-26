@@ -1,6 +1,7 @@
 const log = require('debug')('orion:ask');
 const Discord = require('discord.js');
 const { colors, reactions } =require('../botconfig.json');
+const moment = require('moment-timezone');
 
 const buildQuestionEmbed = (author, options) => {
 
@@ -15,22 +16,30 @@ const buildQuestionEmbed = (author, options) => {
   `${reactions.yes}, ${reactions.no} and ${reactions.maybe}` :
   `${reactions.yes} and ${reactions.no}`;
 
-  const embed = new Discord.MessageEmbed()
+  const baseEmbed = new Discord.MessageEmbed()
   .setColor(colors.blue)
-  .setTitle(question)
+  .setTitle(`"${question}"`)
   .addField('Asked by', author, true)
-  .addField('Expires by', expiration.toLocaleTimeString('en-US'), true)
   .setFooter(`Only "${allowedReactions}" will be counted. Totals will not include my votes.`);
 
-  if (passMinimum) embed.addField('Required Votes', passMinimum, true);
+  const questionEmbed = new Discord.MessageEmbed(baseEmbed)
+  .addField('Poll closes by', expiration, true);
 
-  return embed;
+  if (passMinimum) {
+    questionEmbed.addField('Required Votes', passMinimum, true);
+  };
+
+  return {
+    baseEmbed,
+    questionEmbed,
+  };
 };
 
-const buildResultsEmbed = (questionEmbed, options, results) => {
+const buildResultsEmbed = (baseEmbed, options, results) => {
 
   const {
     includeMaybe,
+    expiration,
     passMinimum,
   } = options;
 
@@ -64,10 +73,16 @@ const buildResultsEmbed = (questionEmbed, options, results) => {
 
   if (passMinimum && passMinimum > yesResults.votes) resultColor = colors.red;
 
-  const embed = new Discord.MessageEmbed(questionEmbed)
-  .setColor(resultColor);
+  const embed = new Discord.MessageEmbed(baseEmbed)
+  .setColor(resultColor)
+  .addField('Poll closed on', expiration, true);
+  
 
-  if(!passMinimum) embed.addField('\u200b','\u200b',true);
+  if(passMinimum) {
+    embed.addField('Required Votes', passMinimum, true);
+  } else {
+    embed.addField('\u200b','\u200b',true);
+  }
 
   embed.addField(reactions.yes, appendVotersToResult(yesResults), true)
   .addField(reactions.no, appendVotersToResult(noResults), true);
@@ -88,7 +103,7 @@ const getOptions = (args) => {
     duration: parseFloat(args[1]) * 60 * 1000, // convert min to ms
   };
 
-  options.expiration = new Date(Date.now() + options.duration);
+  options.expiration = moment(Date.now() + options.duration).tz('America/New_York').format('MM/DD/YY  h:mm a');
   options.includeMaybe = ['true','yes','1'].includes(args[2]); // Using `new Boolean(args[2])` or `Boolean(args[2])` wasn't working.
   options.passMinimum = parseInt(args[3]) > 0 ? parseInt(args[3]) : null;
 
@@ -116,7 +131,10 @@ const exec = async (message, args) => {
 
   const author = message.author;
   
-  const questionEmbed = buildQuestionEmbed(author, options);
+  const {
+    baseEmbed,
+    questionEmbed,
+  } = buildQuestionEmbed(author, options);
   
   const questionMessage = await message.channel.send('@here', questionEmbed);
 
@@ -139,7 +157,7 @@ const exec = async (message, args) => {
     const noResults = await getReactionResults(collected, reactions.no);
     const maybeResults = options.includeMaybe ? await getReactionResults(collected, reactions.maybe) : null;
 
-    const resultsEmbed = buildResultsEmbed(questionEmbed, options, {
+    const resultsEmbed = buildResultsEmbed(baseEmbed, options, {
       yesResults,
       noResults,
       maybeResults,

@@ -34,7 +34,8 @@ client.on('message', message => {
 
   // Remove prefix and split space separated args from the message
   const argsString = message.content.slice(prefix.length);
-  const args = argsString.match(/(?:[^\s"]+|"[^"]*")+/g); // Get the arguments space separated. Ignore spaces between double quotes.
+  const argsArr = argsString.match(/(?:[^\s"]+|"[^"]*")+/g); // Get the arguments space separated. Ignore spaces between double quotes.
+  const args = argsArr.map(s => s.replace(/^"|"$/g,''));
   const commandName = args.shift().toLowerCase();
 
   // Get the command by name or alias
