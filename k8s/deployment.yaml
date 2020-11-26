@@ -17,7 +17,7 @@ spec:
         app: bot-orion
     spec:
       containers:
-        - image: proget.deznorth.com/private-docker/bot-orion:latest
+        - image: proget.deznorth.com/private-docker/deznorth/bot-orion:latest
           name: bot-orion
           env:
             - name: NODE_ENV

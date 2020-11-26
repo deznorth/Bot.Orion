@@ -43,12 +43,12 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
-      - run: docker build -t $APP_NAME:latest .
-      - run: docker tag $APP_NAME:latest $DOCKER_REGISTRY/$APP_NAME:latest
-      - run: docker tag $APP_NAME:latest $DOCKER_REGISTRY/$APP_NAME:$CIRCLE_BUILD_NUM
+      - run: docker build -t deznorth/$APP_NAME:latest .
+      - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:latest
+      - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_BUILD_NUM
       - run: docker login -u $PROGET_USER -p $PROGET_PASS $REGISTRY_URL # User and Pass from dezserv context
-      - run: docker push $DOCKER_REGISTRY/$APP_NAME:$CIRCLE_BUILD_NUM
-      - run: docker push $DOCKER_REGISTRY/$APP_NAME:latest
+      - run: docker push $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_BUILD_NUM
+      - run: docker push $DOCKER_REGISTRY/deznorth/$APP_NAME:latest
   deploy:
     docker:
       - image: circleci/node:latest
