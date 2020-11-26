@@ -4,6 +4,8 @@ const { colors, reactions } =require('../botconfig.json');
 const moment = require('moment-timezone');
 const { isDev } = require('../util/constants');
 
+const DEFAULT_DURATION = 5 * 60 * 1000;
+
 const buildQuestionEmbed = (author, options) => {
 
   const {
@@ -101,7 +103,7 @@ const appendVotersToResult = ({ votes, voters }) => {
 const getOptions = (args) => {
   const options = {
     question: args[0],
-    duration: parseFloat(args[1]) * 60 * 1000, // convert min to ms
+    duration: args[1] ? parseFloat(args[1]) * 60 * 1000 : DEFAULT_DURATION, // convert min to ms
   };
 
   options.expiration = moment(Date.now() + options.duration).tz('America/New_York').format('MM/DD/YY  h:mm a');
