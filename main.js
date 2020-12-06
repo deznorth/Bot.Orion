@@ -57,7 +57,11 @@ client.on('message', message => {
     let reply = `You didn't provide enough arguments!`;
 
     if (command.usage) {
-      reply += `\nTry using the command like: \`${prefix}${commandName} $${command.usage}\``;
+      reply += `\nTry using this format: \`${prefix}${commandName} ${command.usage}\``;
+    }
+
+    if (command.example) {
+      reply += `\nExample: \`${prefix}${commandName} ${command.example}\``;
     }
 
     return message.channel.send(reply);

@@ -4,6 +4,8 @@ const { colors, reactions } =require('../botconfig.json');
 const moment = require('moment-timezone');
 const { isDev } = require('../util/constants');
 
+const DEFAULT_DURATION = 5 * 60 * 1000;
+
 const buildQuestionEmbed = (author, options) => {
 
   const {
@@ -19,7 +21,7 @@ const buildQuestionEmbed = (author, options) => {
 
   const baseEmbed = new Discord.MessageEmbed()
   .setColor(colors.blue)
-  .setTitle(`"${question}"`)
+  .setTitle(`${question}`)
   .addField('Asked by', author, true)
   .setFooter(`Only "${allowedReactions}" will be counted. Totals will not include my votes.`);
 
@@ -101,7 +103,7 @@ const appendVotersToResult = ({ votes, voters }) => {
 const getOptions = (args) => {
   const options = {
     question: args[0],
-    duration: parseFloat(args[1]) * 60 * 1000, // convert min to ms
+    duration: args[1] ? parseFloat(args[1]) * 60 * 1000 : DEFAULT_DURATION, // convert min to ms
   };
 
   options.expiration = moment(Date.now() + options.duration).tz('America/New_York').format('MM/DD/YY  h:mm a');
@@ -176,7 +178,7 @@ module.exports = {
   name: 'ask',
   description: 'Posts a question, collects answers and shows results after a given time limit.',
   usage: '"<question>" <duration in minutes> <allow "maybe" option> <minimum votes to pass>',
-  example: '"does anyone want to play rocket league?" 10 true 3',
+  example: '"Baby Yoda is better than Grogu" 10 yes 3',
   argsRequired: true,
   guildOnly: !isDev, // Enable DM testing while in development
   exec,
