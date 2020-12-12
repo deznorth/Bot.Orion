@@ -1,4 +1,5 @@
-const { prefix, defaultCooldown } = require('../botconfig.json');
+const { defaultCooldown } = require('../botconfig.json');
+const { prefix } = require('../util/constants');
 const log = require('debug')('orion:help');
 
 const exec = (message, args) => {

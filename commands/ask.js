@@ -178,7 +178,7 @@ module.exports = {
   name: 'ask',
   description: 'Posts a question, collects answers and shows results after a given time limit.',
   usage: '"<question>" <duration in minutes> <allow "maybe" option> <minimum votes to pass>',
-  example: '"Baby Yoda is better than Grogu" 10 yes 3',
+  example: '"is Baby Yoda better than Grogu?" 10 yes 3',
   argsRequired: true,
   guildOnly: !isDev, // Enable DM testing while in development
   exec,
