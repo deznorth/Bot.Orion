@@ -3,6 +3,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const log = require('debug')('orion');
 const config = require('./botconfig.json');
+const { prefix } = require('./util/constants');
 
 const client = new Discord.Client();
 
@@ -14,8 +15,6 @@ for(const file of commandFiles) {
   const command = require(`./commands/${file}`);
   client.commands.set(command.name, command);
 }
-
-const prefix = config.prefix;
 
 client.once('ready', () => {
   log(`Logged in as ${client.user.tag}!`);

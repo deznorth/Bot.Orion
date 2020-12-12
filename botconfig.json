@@ -1,5 +1,6 @@
 {
-  "prefix": "!",
+  "devPrefix": "!!",
+  "prodPrefix": "!",
   "defaultCooldown": 3,
   "colors": {
     "green": "#00ff99",
