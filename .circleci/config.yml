@@ -35,14 +35,14 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run: yarn install
       - save_cache:
           paths:
             - node_modules
-          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
       - run: docker build -t deznorth/$APP_NAME:latest .
       - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:latest
       - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_BUILD_NUM
@@ -60,8 +60,11 @@ jobs:
       - kubernetes/install-kubectl
       - kubernetes/install-kubeconfig:
           kubeconfig: DEZSERV_KUBECONFIG
+      - run:
+          name: Fetch deployment manifest
+          command: curl -H "$GITHUB_AUTH_HEADER" -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
-          resource-file-path: k8s/deployment.yaml
+          resource-file-path: ./deployment.yaml
           resource-name: deployment/bot-orion
           show-kubectl-command: true
