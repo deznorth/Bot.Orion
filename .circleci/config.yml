@@ -60,7 +60,7 @@ jobs:
       - kubernetes/install-kubectl
       - kubernetes/install-kubeconfig:
           kubeconfig: DEZSERV_KUBECONFIG
-      - run: 'curl -H $GITHUB_AUTH_HEADER -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml'
+      - run: curl -H '$GITHUB_AUTH_HEADER' -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
           resource-file-path: ./deployment.yaml
