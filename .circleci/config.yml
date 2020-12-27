@@ -35,20 +35,14 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-dependencies-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run: yarn install
       - save_cache:
           paths:
             - node_modules
-            - commands
-            - util
-            - botconfig.json
-            - Dockerfile
-            - main.js
-            - package.json
-          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-dependencies-{{ checksum "yarn.lock" }}
       - run: docker build -t deznorth/$APP_NAME:latest .
       - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:latest
       - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_BUILD_NUM
