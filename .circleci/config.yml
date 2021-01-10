@@ -62,7 +62,7 @@ jobs:
       - run: git clone git@github.com:deznorth/dezserv.git
       - run:
           name: update deployment manifest image
-          command: cd ./dezserv/DezApps/Orion && kubectl patch --local -f deployment.yaml -p '{"spec":{"template":{"spec":{"containers":[{"name":"orion-bot","image":"proget.deznorth.com/private-docker/deznorth/bot-orion:'$CIRCLE_SHA1'"}]}}}}' -o yaml
+          command: cd ./dezserv/DezApps/Orion && kubectl patch --local -f deployment.yaml -p '{"spec":{"template":{"spec":{"containers":[{"name":"orion-bot","image":"proget.deznorth.com/private-docker/deznorth/bot-orion:'$CIRCLE_SHA1'"}]}}}}' -o yaml > deployment.yaml
       - run:
           name: commit changes
           command: cd ./dezserv && git add . && git commit -m "deploy bot-orion:$CIRCLE_SHA1"
