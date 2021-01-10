@@ -60,7 +60,7 @@ jobs:
       # - run:
       #     name: Fetch deployment manifest
       #     command: curl -H "$GITHUB_AUTH_HEADER" -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml
-      - run: git clone https://deznorth:e271545d13a7a3a06332cc55a7d5cc27a5d7e68b@github.com/deznorth/dezserv.git
+      - run: git clone ssh://git@github.com:deznorth/dezserv.git/
       - run: ls
       - run: cd dezserv/DezApps/Orion
       - run: ls
