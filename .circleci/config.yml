@@ -56,14 +56,16 @@ jobs:
     steps:
       - checkout
       - kustomize/install
-      #
-      # - run:
-      #     name: Fetch deployment manifest
-      #     command: curl -H "$GITHUB_AUTH_HEADER" -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml
+      - run:
+          name: Configure Github Identity
+          command: git config --global user.email $GITHUB_MACHINE_EMAIL && git config --global user.name $GITHUB_MACHINE_NAME
       - run: git clone git@github.com:deznorth/dezserv.git
-      - run: ls
-      - run: cd ./dezserv/DezApps/Orion && ls && cat ./kustomization.yaml
-      - run: cd ./dezserv/DezApps/Orion && kustomize edit set image proget.deznorth.com/private-docker/deznorth/bot-orion:$CIRCLE_SHA1
-      - run: cd ./dezserv/DezApps/Orion && cat ./kustomization.yaml
-      - run: cd ./dezserv && git add . && git commit -m "deploy bot-orion:$CIRCLE_SHA1"
-      - run: cd ./dezserv && git push
+      - run:
+          name: update deployment manifest image
+          command: cd ./dezserv/DezApps/Orion && kustomize edit set image proget.deznorth.com/private-docker/deznorth/bot-orion:$CIRCLE_SHA1
+      - run:
+          name: commit changes
+          command: cd ./dezserv && git add . && git commit -m "deploy bot-orion:$CIRCLE_SHA1"
+      - run:
+          name: push changes
+          command: cd ./dezserv && git push
