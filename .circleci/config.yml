@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  kustomize: finc/kustomize@0.0.2
+  kubernetes: circleci/kubernetes@0.11.2
 workflows:
   version: 2
   build-deploy:
@@ -55,14 +55,14 @@ jobs:
           password: $DOCKERHUB_TOKEN
     steps:
       - checkout
-      - kustomize/install
+      - kubernetes/install-kubectl
       - run:
           name: Configure Github Identity
           command: git config --global user.email $GITHUB_MACHINE_EMAIL && git config --global user.name $GITHUB_MACHINE_NAME
       - run: git clone git@github.com:deznorth/dezserv.git
       - run:
           name: update deployment manifest image
-          command: cd ./dezserv/DezApps/Orion && kustomize edit set image proget.deznorth.com/private-docker/deznorth/bot-orion:$CIRCLE_SHA1
+          command: cd ./dezserv/DezApps/Orion && kubectl patch --local -f deployment.yaml -p '{"spec":{"template":{"spec":{"containers":[{"name":"orion-bot","image":"proget.deznorth.com/private-docker/deznorth/bot-orion:$CIRCLE_SHA1"}]}}}}' -o yaml
       - run:
           name: commit changes
           command: cd ./dezserv && git add . && git commit -m "deploy bot-orion:$CIRCLE_SHA1"
