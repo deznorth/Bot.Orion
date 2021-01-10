@@ -65,3 +65,5 @@ jobs:
       - run: cd ./dezserv/DezApps/Orion && ls && cat ./kustomization.yaml
       - run: cd ./dezserv/DezApps/Orion && kustomize edit set image proget.deznorth.com/private-docker/deznorth/bot-orion:$CIRCLE_SHA1
       - run: cd ./dezserv/DezApps/Orion && cat ./kustomization.yaml
+      - run: cd ./dezserv && git add . && git commit -m "deploy bot-orion:$CIRCLE_SHA1"
+      - run: cd ./dezserv && git push
