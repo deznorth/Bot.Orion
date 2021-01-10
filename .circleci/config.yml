@@ -56,6 +56,7 @@ jobs:
     steps:
       - checkout
       - kustomize/install
+      #
       # - run:
       #     name: Fetch deployment manifest
       #     command: curl -H "$GITHUB_AUTH_HEADER" -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml
