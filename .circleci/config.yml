@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  kubernetes: circleci/kubernetes@0.11.2
+  kustomize: finc/kustomize@0.0.2
 workflows:
   version: 2
   build-deploy:
@@ -43,12 +43,10 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "yarn.lock" }}
-      - run: docker build -t deznorth/$APP_NAME:latest .
-      - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:latest
-      - run: docker tag deznorth/$APP_NAME:latest $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_BUILD_NUM
+      - run: docker build -t deznorth/$APP_NAME:$CIRCLE_SHA1 .
+      - run: docker tag deznorth/$APP_NAME:$CIRCLE_SHA1 $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_SHA1
       - run: docker login -u $PROGET_USER -p $PROGET_PASS $REGISTRY_URL # User and Pass from dezserv context
-      - run: docker push $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_BUILD_NUM
-      - run: docker push $DOCKER_REGISTRY/deznorth/$APP_NAME:latest
+      - run: docker push $DOCKER_REGISTRY/deznorth/$APP_NAME:$CIRCLE_SHA1
   deploy:
     docker:
       - image: circleci/node:latest
@@ -57,14 +55,14 @@ jobs:
           password: $DOCKERHUB_TOKEN
     steps:
       - checkout
-      - kubernetes/install-kubectl
-      - kubernetes/install-kubeconfig:
-          kubeconfig: DEZSERV_KUBECONFIG
-      - run:
-          name: Fetch deployment manifest
-          command: curl -H "$GITHUB_AUTH_HEADER" -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: ./deployment.yaml
-          resource-name: deployment/bot-orion
-          show-kubectl-command: true
+      - kustomize/install
+      # - run:
+      #     name: Fetch deployment manifest
+      #     command: curl -H "$GITHUB_AUTH_HEADER" -o ./deployment.yaml -L https://raw.githubusercontent.com/deznorth/dezserv/master/Apps/Bot_Orion/deployment.yaml
+      - run: git clone https://e271545d13a7a3a06332cc55a7d5cc27a5d7e68b@github.com/deznorth/dezserv.git
+      - run: ls
+      - run: cd dezserv/DezApps/Orion
+      - run: ls
+      - run: cat ./deployment.yaml
+      - run: kustomize edit set image proget.deznorth.com/private-docker/deznorth/bot-orion:$CIRCLE_SHA1
+      - run: cat ./deployment.yaml
