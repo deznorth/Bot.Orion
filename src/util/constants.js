@@ -1,4 +1,4 @@
-const { devPrefix, prodPrefix } = require('../botconfig.json');
+const { devPrefix, prodPrefix } = require('../../botconfig.json');
 
 const isDev = process.env.NODE_ENV === 'dev';
 
