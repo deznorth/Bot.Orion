@@ -1,11 +1,14 @@
 require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
+const Agenda = require('agenda');
 const log = require('debug')('orion');
 const config = require('../botconfig.json');
 const { prefix } = require('./util/constants');
+const agendaBootstrapper = require('./util/agendaBootstrapper');
 
-const client = new Discord.Client();
+const agenda = new Agenda({ db: { address: process.env.MONGODB_URI, options: { useNewUrlParser: true, useUnifiedTopology: true } } });
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
@@ -16,6 +19,8 @@ for(const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
+agendaBootstrapper(client, agenda);
+
 client.once('ready', () => {
   log(`Logged in as ${client.user.tag}!`);
   client.user.setPresence({
@@ -25,9 +30,18 @@ client.once('ready', () => {
     },
     status: 'online',
   });
+  agenda.processEvery('3 minutes');
+  (async () => await agenda.start())();
 });
 
-client.on('message', message => {
+client.on('message', async message => {
+  if (message.partial) {
+    try {
+      await message.fetch();
+    } catch (e) {
+      log(`Error fetching partial message:\n${e}`);
+    }
+  }
   // Stop if message is created by the bot or if it doesn't start with prefix
   if(!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -88,7 +102,7 @@ client.on('message', message => {
 
   // Actually execute the command
   try {
-    command.exec(message, args);
+    command.exec(message, args, agenda);
   } catch (error) {
     log(`error executing command: ${commandName}\n`, error);
     message.reply(`there was an error trying to execute the "${commandName}" command.`);
