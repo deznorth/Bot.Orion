@@ -11,6 +11,7 @@
     "start:prod": "node ./src/main.js"
   },
   "dependencies": {
+    "agenda": "^4.1.0",
     "debug": "^4.2.0",
     "discord.js": "^12.4.1",
     "moment-timezone": "^0.5.32"
