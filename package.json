@@ -7,8 +7,8 @@
   "author": "David Rojas",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon .",
-    "start:prod": "node ."
+    "start": "nodemon ./src/main.js",
+    "start:prod": "node ./src/main.js"
   },
   "dependencies": {
     "debug": "^4.2.0",

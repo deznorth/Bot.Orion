@@ -1,6 +1,6 @@
 const log = require('debug')('orion:ask');
 const Discord = require('discord.js');
-const { colors, reactions } =require('../botconfig.json');
+const { colors, reactions } =require('../../botconfig.json');
 const moment = require('moment-timezone');
 const { isDev } = require('../util/constants');
 
@@ -79,7 +79,6 @@ const buildResultsEmbed = (baseEmbed, options, results) => {
   const embed = new Discord.MessageEmbed(baseEmbed)
   .setColor(resultColor)
   .addField('Poll closed on', expiration, true);
-  
 
   if(passMinimum) {
     embed.addField('Required Votes', passMinimum, true);
@@ -135,14 +134,14 @@ const exec = async (message, args) => {
   const options = getOptions(args);
 
   const author = message.author;
-  
+
   const {
     baseEmbed,
     questionEmbed,
   } = buildQuestionEmbed(author, options);
 
   const hereTag = isDev ? '' : '@here';
-  
+
   const questionMessage = await message.channel.send(hereTag, questionEmbed);
 
   questionMessage.pin();
@@ -157,7 +156,7 @@ const exec = async (message, args) => {
   questionMessage.react(reactions.no);
 
   if (options.includeMaybe) questionMessage.react(reactions.maybe);
-  
+
   await questionMessage.awaitReactions(reactionFilter, { time: options.duration })
   .then(async collected => {
     const yesResults = await getReactionResults(collected, reactions.yes);
