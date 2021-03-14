@@ -1,4 +1,4 @@
-const log = require('./logger').extend('agenda');
+const log = require('./logger')('orion:agenda');
 
 // Definition Imports
 const ask = require('../jobDefinitions/ask');
