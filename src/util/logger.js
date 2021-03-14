@@ -22,4 +22,4 @@ const logger = namespace => {
   return debug(namespace);
 }
 
-module.exports = logger;
+module.exports = logger('orion');
