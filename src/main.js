@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs');
 const Discord = require('discord.js');
 const Agenda = require('agenda');
-const log = require('./util/logger')('orion');
+const log = require('./util/logger');
 const config = require('../botconfig.json');
 const { prefix } = require('./util/constants');
 const agendaBootstrapper = require('./util/agendaBootstrapper');

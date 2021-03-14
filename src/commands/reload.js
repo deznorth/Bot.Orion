@@ -1,4 +1,4 @@
-const log = require('../util/logger')('orion:reload');
+const log = require('../util/logger').extend('reload');
 
 const exec = (message, args) => {
   const commandName = args[0].toLowerCase();
