@@ -1,4 +1,4 @@
-const log = require('debug')('orion:ask');
+const log = require('../util/logger').extend('ask');
 const Discord = require('discord.js');
 const { colors, reactions } =require('../../botconfig.json');
 const { isDev } = require('../util/constants');
