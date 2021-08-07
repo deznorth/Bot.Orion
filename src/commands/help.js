@@ -44,7 +44,7 @@ const exec = (message, args) => {
 module.exports = {
   name: 'help',
   aliases: ['h','commands'],
-  description: 'Lists all of my available commands!',
+  description: 'Lists all of my available commands.',
   usage: '[command name]',
   example: 'ask',
   cooldown: 5,
